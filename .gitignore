@@ -29,6 +29,8 @@
 *.dylib
 
 # Executables
+hello_c
+hello_asm
 *.exe
 *.out
 *.app
