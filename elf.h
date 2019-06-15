@@ -10,6 +10,8 @@ typedef uint64_t    Elf64_Off;
 typedef uint16_t    Elf64_Section;
 typedef Elf64_Half  Elf64_Versym;
 
+#define EI_NIDENT (16)
+
 typedef struct
 {
   unsigned char     e_ident[EI_NIDENT];     /* Magic number and other info */
