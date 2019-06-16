@@ -82,7 +82,7 @@ void print_elf64_header(void *data)
 {
     Elf64_Ehdr  *ehdr = data;
 
-    printf("[   elf64 header ]\n");
+    printf("[   elf64 header (0x%lx bytes)]\n", sizeof(Elf64_Ehdr));
     printf("    e_ident = ");
     for (int i = 0; i < EI_NIDENT; i++)
         printf("%02x ", ehdr->e_ident[i]);
