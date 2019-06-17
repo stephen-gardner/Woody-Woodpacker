@@ -1,3 +1,6 @@
+#ifndef ELF_H
+# define ELF_H
+
 #include <stdint.h>
 
 typedef uint16_t    Elf64_Half;
@@ -56,3 +59,8 @@ typedef struct
   Elf64_Xword       p_align;                /* Segment alignment */
 } Elf64_Phdr;
 
+#define PF_X		(1 << 0)	/* Segment is executable */
+#define PF_W		(1 << 1)	/* Segment is writable */
+#define PF_R		(1 << 2)	/* Segment is readable */
+
+#endif

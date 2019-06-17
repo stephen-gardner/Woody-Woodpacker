@@ -122,7 +122,7 @@ typedef struct      s_decryptor_values
     uint64_t        key;
 }                   t_dv;
 
-uint64_t encrypt(void *data, Elf64_Phdr *phdr)  /* return 64 bit key */
+uint64_t elf64_encrypt(void *data, Elf64_Phdr *phdr)  /* return 64 bit key */
 {
     void    *ptr_start;
     void    *ptr_end;
@@ -131,7 +131,7 @@ uint64_t encrypt(void *data, Elf64_Phdr *phdr)  /* return 64 bit key */
 
     ptr_start = data + phdr->p_offset;
     ptr_end = data + phdr->p_offset + phdr->p_filesz;
-    (void)clock_gettime(CLOCK_BOOTTIME, &tp);
+    (void)clock_gettime(CLOCK_REALTIME, &tp);
     srand(tp.tv_sec ^ tp.tv_nsec);  /* try to figure out the key from file creation time */
     key = rand();
     key <<= 32;
@@ -146,7 +146,7 @@ uint64_t encrypt(void *data, Elf64_Phdr *phdr)  /* return 64 bit key */
     return key_copy;
 }
 
-void insert(void *data, Elf64_Phdr *phdr)
+void elf64_insert(void *data, Elf64_Phdr *phdr)
 {
     Elf64_Ehdr  *ehdr = data;
     t_dv        dv;
@@ -157,7 +157,7 @@ void insert(void *data, Elf64_Phdr *phdr)
     ehdr->e_entry = phdr->p_vaddr + phdr->p_memsz;
     dv.address = phdr->p_vaddr;
     dv.size = phdr->p_memsz;
-    dv.key = encrypt(data, phdr);
+    dv.key = elf64_encrypt(data, phdr);
     ptr = data + phdr->p_offset + phdr->p_filesz;
     phdr->p_memsz += decryptor_len;
     phdr->p_filesz += decryptor_len;
@@ -184,7 +184,7 @@ int main(int ac, char **av)
         return free_msg_quit(data, "could not find code segment");
     if (get_cavity_size(data, phdr) < decryptor_len)
         return free_msg_quit(data, "could not find suitable cavity");
-    insert(data, phdr);
+    elf64_insert(data, phdr);
     if (!file_put_contents("woody", data, fs, 0755))
         printf("could not write output file");
     free(data);

@@ -4,6 +4,8 @@
 woody
 woody_woodpacker
 libft.a
+src/decryptor
+src/decryptor.c
 
 # Object files
 *.o
