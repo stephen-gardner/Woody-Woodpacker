@@ -1,6 +1,6 @@
 bits 64
 default rel
-
+_start:
     pushf
     push    rdi
     push    rsi
@@ -18,14 +18,14 @@ default rel
     mov     rdx, [rel key]
     add     rsi, rdi
 
-.a: cmp     rdi, rsi
-    jge     .b
+.b: cmp     rdi, rsi
+    jge     .c
     xor     byte [rdi], dl
     inc     rdi
     ror     rdx, 8
-    jmp     .a
+    jmp     .b
 
-.b: pop     rax
+.c: pop     rax
     pop     rdx
     pop     rsi
     pop     rdi

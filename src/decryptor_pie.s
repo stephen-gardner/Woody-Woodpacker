@@ -1,7 +1,6 @@
 bits 64
 default rel
-
-.d:
+_start:
     pushf
     push    rdi
     push    rsi
@@ -15,9 +14,9 @@ default rel
     mov     rdx, entry-msg
     syscall
 
-    call    .c
-.c  pop     rcx
-    sub     rcx, .c-.d
+    call    .a
+.a  pop     rcx
+    sub     rcx, .a-_start
     sub     rcx, [rel pos]
 
     mov     rdi, [rel address]
@@ -27,14 +26,14 @@ default rel
     add     rsi, rdi
 
 
-.a: cmp     rdi, rsi
-    jge     .b
+.b: cmp     rdi, rsi
+    jge     .c
     xor     byte [rdi], dl
     inc     rdi
     ror     rdx, 8
-    jmp     .a
+    jmp     .b
 
-.b: add [rel entry], rcx
+.c: add [rel entry], rcx
     pop     rax
     pop     rcx
     pop     rdx
