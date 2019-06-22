@@ -83,3 +83,22 @@ the only thing we would want to change in the elf header is the entry address
 also: update p_filesz and p_memsz for the target segment
 maybe set the +w bit and this can be used to identify binaries which were already processed
 another approach identifying already process binaries is to just read/compare bytes at entry point
+
+
+06/21/2019
+
+regarding binaries that have the executable load segment start at offset 0:
+need to implement function `int is_overlap()` which checks if given index is shared with other loadable segments
+(or important headers Elf, Program) to avoid overwriting things that will make the binary not load/execute
+
+logic / strategy:
+    going through all program headers
+    find the segment which has the executable bit and contains the program entry point
+    go to the end of the segment
+    get size of null byte cavity that does not overlap other segments;
+    confirm that it will fit the decryptor code;
+    going backwards from the end of the segment towards beginning of file,
+    get size of contiguous area which does not overlap other segments,
+    this will be the part of file which will be encrypted
+    confirm that it contains the entry point
+    encrypt, insert decryptor, adjust headers, write output
