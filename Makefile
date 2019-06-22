@@ -2,7 +2,7 @@ NAME    := woody_woodpacker
 CFLAGS  += -g -Wall -Werror -Wextra
 CFLAGS	+= -Iinclude
 LDFLAGS	+= -Llibft -lft
-SRC     := src/main_pie.c
+SRC     := src/main.c
 OBJ		:= $(SRC:.c=.o)
 LIBFT   := libft/libft.a
 
@@ -15,7 +15,7 @@ $(LIBFT):
 	make -C libft
 
 src/decryptor.c:
-	cd src; nasm -f bin decryptor_pie.s -o decryptor
+	cd src; nasm -f bin decryptor.s -o decryptor
 	cd src; xxd -i -c 8 decryptor decryptor.c
 
 src/decryptor.o: src/decryptor.c

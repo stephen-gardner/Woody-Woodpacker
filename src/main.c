@@ -67,24 +67,81 @@ Elf64_Phdr  *get_code_segment(void *data)
     return NULL;
 }
 
-ssize_t get_cavity_size(void *data, Elf64_Phdr *phdr)
+
+int is_overlap(void *data, Elf64_Phdr *target, size_t idx)
+{
+    Elf64_Ehdr  *ehdr = data;
+    Elf64_Phdr  *phdr = data + ehdr->e_phoff;
+
+    if (idx < sizeof(Elf64_Ehdr))
+        return 1;
+    if ((idx >= ehdr->e_phoff) && (idx < (ehdr->e_phoff + (sizeof(Elf64_Phdr) * ehdr->e_phnum))))
+        return 1;
+    for (int i = 0; i < ehdr->e_phnum; i++)
+    {
+        if ((idx >= phdr->p_offset) && (idx < (phdr->p_offset + phdr->p_filesz))) {
+            if (phdr != target)
+                return 1;
+        }
+        phdr++;
+    }
+    return 0;
+}
+
+size_t get_cavity_size(void *data, Elf64_Phdr *phdr, ssize_t fsize)
 {
     void    *ptr_start;
-    void    *ptr_end;
-    ssize_t cavity_size;
+    void    *ptr;
 
     ptr_start = data + phdr->p_offset + phdr->p_filesz;
-    ptr_end = data + phdr->p_offset;
-    while (ptr_end < ptr_start)
-        ptr_end += phdr->p_align;
-    cavity_size = ptr_end - ptr_start;
-    while (ptr_start < ptr_end)
+    ptr = ptr_start;
+    while (ptr < (data + fsize))
     {
-        if (*(unsigned char *)ptr_start)
-            return 0;
-        ptr_start++;            
+        if (*(unsigned char *)ptr)
+            break ;
+        if (is_overlap(data, phdr, ptr-data))
+            break ;
+        ptr++;
     }
-    return cavity_size;
+    return ptr-ptr_start;
+}
+
+size_t get_target_size(void *data, Elf64_Phdr *phdr, ssize_t fsize)
+{
+    void    *ptr_start;
+    void    *ptr;
+
+    (void)fsize;
+    ptr_start = data + phdr->p_offset + phdr->p_filesz - 1;
+    ptr = ptr_start;
+    while (ptr >= data)
+    {
+        if (is_overlap(data, phdr, ptr-data)) {
+            ptr++;
+            break ;
+        }
+        ptr--;
+    }
+    return ptr_start-ptr;
+}
+
+size_t get_target_address(void *data, Elf64_Phdr *phdr, ssize_t fsize)
+{
+    void    *ptr_start;
+    void    *ptr;
+
+    (void)fsize;
+    ptr_start = data + phdr->p_offset + phdr->p_filesz - 1;
+    ptr = ptr_start;
+    while (ptr >= data)
+    {
+        if (is_overlap(data, phdr, ptr-data)) {
+            ptr++;
+            break ;
+        }
+        ptr--;
+    }
+    return ptr-data;
 }
 
 int is_valid_elf64(void *data)
@@ -94,7 +151,7 @@ int is_valid_elf64(void *data)
     const unsigned char elf64_valid_header[] = {
       0x7f, 0x45, 0x4c, 0x46, 0x02, 0x01, 0x01, 0x00,
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-      0x02, 0x00, 0x3e, 0x00, 0x01, 0x00, 0x00, 0x00
+      0x03, 0x00, 0x3e, 0x00, 0x01, 0x00, 0x00, 0x00
     };
 
     if (memcmp(data, elf64_valid_header, sizeof(elf64_valid_header)))
@@ -116,27 +173,28 @@ int free_msg_quit(void *p, char *s)
 
 typedef struct      s_decryptor_values
 {
-    uint64_t        ep;
+    uint64_t        entry;
     uint64_t        address;
     uint64_t        size;
     uint64_t        key;
+    uint64_t        pos;
 }                   t_dv;
 
-uint64_t elf64_encrypt(void *data, Elf64_Phdr *phdr)  /* return 64 bit key */
+uint64_t elf64_encrypt(void *data, Elf64_Phdr *phdr, ssize_t fsize)  /* return 64 bit key */
 {
     void    *ptr_start;
     void    *ptr_end;
     uint64_t key, key_copy;
     struct timespec tp;
 
-    ptr_start = data + phdr->p_offset;
-    ptr_end = data + phdr->p_offset + phdr->p_filesz;
     (void)clock_gettime(CLOCK_REALTIME, &tp);
     srand(tp.tv_sec ^ tp.tv_nsec);  /* try to figure out the key from file creation time */
     key = rand();
     key <<= 32;
     key += rand();
-    key_copy = key;
+    key_copy = key;    
+    ptr_start = data + get_target_address(data, phdr, fsize);
+    ptr_end = ptr_start + get_target_size(data, phdr, fsize);
     while (ptr_start < ptr_end)
     {
         *(unsigned char *)ptr_start ^= key & 0xff;
@@ -146,23 +204,32 @@ uint64_t elf64_encrypt(void *data, Elf64_Phdr *phdr)  /* return 64 bit key */
     return key_copy;
 }
 
-void elf64_insert(void *data, Elf64_Phdr *phdr)
+
+
+
+
+void elf64_insert(void *data, Elf64_Phdr *phdr, ssize_t fsize)
 {
     Elf64_Ehdr  *ehdr = data;
     t_dv        dv;
     void        *ptr;
     ssize_t     k;
 
-    dv.ep = ehdr->e_entry;    
+    dv.entry = ehdr->e_entry;    
     ehdr->e_entry = phdr->p_vaddr + phdr->p_memsz;
-    dv.address = phdr->p_vaddr;
-    dv.size = phdr->p_memsz;
-    dv.key = elf64_encrypt(data, phdr);
-    ptr = data + phdr->p_offset + phdr->p_filesz;
+    dv.pos = ehdr->e_entry;
+
+    dv.size = get_target_size(data, phdr, fsize);
+    dv.address = dv.pos - dv.size;
+
+    dv.key = elf64_encrypt(data, phdr, fsize);
+
+    ptr = data + phdr->p_offset + phdr->p_filesz;   //before modifying p_filesz
+
     phdr->p_memsz += decryptor_len;
     phdr->p_filesz += decryptor_len;
     phdr->p_flags |= PF_X | PF_W | PF_R;
-    k = decryptor_len - sizeof(t_dv);
+    k = decryptor_len - sizeof(t_dv);    
     memcpy(ptr, decryptor, k);
     memcpy(ptr + k, &dv, sizeof(t_dv));
 }
@@ -171,21 +238,21 @@ int main(int ac, char **av)
 {
     char        *data;
     Elf64_Phdr  *phdr;
-    ssize_t     fs;
+    ssize_t     fsize;
 
     if (ac != 2)
         return free_msg_quit(0, "input file name missing");
-    fs = 0;        
-    if (!(data = file_get_contents(av[1], &fs)))
+    fsize = 0;
+    if (!(data = file_get_contents(av[1], &fsize)))
         return free_msg_quit(0, "failed to read input file");
     if (!is_valid_elf64(data))
         return free_msg_quit(data, "file not valid");
     if (!(phdr = get_code_segment(data)))
         return free_msg_quit(data, "could not find code segment");
-    if (get_cavity_size(data, phdr) < decryptor_len)
+    if (get_cavity_size(data, phdr, fsize) < decryptor_len)
         return free_msg_quit(data, "could not find suitable cavity");
-    elf64_insert(data, phdr);
-    if (!file_put_contents("woody", data, fs, 0755))
+    elf64_insert(data, phdr, fsize);
+    if (!file_put_contents("woody", data, fsize, 0755))
         printf("could not write output file");
     free(data);
     return 0;
