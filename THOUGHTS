@@ -102,3 +102,10 @@ logic / strategy:
     this will be the part of file which will be encrypted
     confirm that it contains the entry point
     encrypt, insert decryptor, adjust headers, write output
+
+
+trouble with dynamically linked binaries that are stripped
+need to look into the interpreter
+
+https://lwn.net/Articles/631631/
+https://www.cs.kent.ac.uk/people/staff/srk21/blog/devel/custom-elf-phdrs.html
