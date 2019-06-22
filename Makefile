@@ -1,5 +1,5 @@
 NAME    := woody_woodpacker
-CFLAGS  += -Wall -Werror -Wextra
+CFLAGS  += -g -Wall -Werror -Wextra
 CFLAGS	+= -Iinclude
 LDFLAGS	+= -Llibft -lft
 SRC     := src/main_pie.c
