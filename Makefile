@@ -1,6 +1,6 @@
 NAME    := woody_woodpacker
 CFLAGS  += -g -Wall -Werror -Wextra
-CFLAGS	+= -Iinclude
+CFLAGS	+= -Iinclude -Ilibft/inc
 LDFLAGS	+= -Llibft -lft
 SRC     := src/main.c
 OBJ		:= $(SRC:.c=.o)

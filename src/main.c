@@ -1,38 +1,54 @@
-#include <elf.h>
-#include <time.h>
-#include <stdio.h>
+#include "elf.h"
+#include "libft.h"
+#include "libftprintf.h"
 #include <fcntl.h>
-#include <string.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 
 extern unsigned char decryptor[];
 extern unsigned int decryptor_len;
+
+off_t   get_file_size(int fd)
+{
+    off_t   result;
+
+    result = lseek(fd, 0, SEEK_END);
+    if (lseek(fd, 0, SEEK_SET) == -1)
+        return -1;
+    return result;
+}
 
 char *file_get_contents(char *f, ssize_t *size)
 {
     int         fd;
     ssize_t     ret;
-    struct stat st;
     char        *data;
 
-    if ((fd = open(f, O_RDONLY)) == -1)
+    if (((fd = open(f, O_RDONLY)) == -1) ||
+        ((*size = get_file_size(fd)) == -1))
         return NULL;
-    data = NULL;
-    if (fstat(fd, &st) == 0)
-        data = malloc(st.st_size);
+    data = ft_memalloc(*size);
     ret = -1;
     if (data)
-        ret = read(fd, data, st.st_size);
+        ret = read(fd, data, *size);
     close(fd);
-    *size = st.st_size;
-    if (ret == st.st_size)  /* maybe include a check for minimum valid file size ? */
+    if (ret == *size)
         return data;
     if (data)
         free(data);
     return NULL;
+}
+
+
+uint64_t    get_random_key()
+{
+    int             fd;
+    unsigned char   data[8];
+
+    if ((fd = open("/dev/urandom", O_RDONLY)) == -1)
+        return 0xdeadbeefbadc0ffe;
+    if (read(fd, data, 8) != 8)
+        return 0xd0d0cacafeedc0de;
+    close(fd);
+    return *(uint64_t *)data;
 }
 
 int file_put_contents(char *f, void *d, ssize_t s, int m)
@@ -118,7 +134,7 @@ Elf64_Shdr	*get_text_section(void *data)
 	strings = (char *)data + shdr[ehdr->e_shstrndx].sh_offset;
 	for (int i=0; i < ehdr->e_shnum; i++) {
         if ((shdr[i].sh_type == SHT_PROGBITS) && (shdr[i].sh_flags & SHF_EXECINSTR)) {
-            if (!strcmp(".text", strings + shdr[i].sh_name)) {
+            if (!ft_strcmp(".text", strings + shdr[i].sh_name)) {
                 return &shdr[i];
             }
         }
@@ -140,9 +156,9 @@ int is_valid_header(void *data)
     
     int result = 0;
 
-    if (!memcmp(data, elf64_sysv, sizeof(elf64_sysv)))
+    if (!ft_memcmp(data, elf64_sysv, sizeof(elf64_sysv)))
         result = 1;
-    if (!memcmp(data, elf64_gnu, sizeof(elf64_gnu)))
+    if (!ft_memcmp(data, elf64_gnu, sizeof(elf64_gnu)))
         result = 1;
 
     return result;
@@ -171,7 +187,7 @@ int free_msg_quit(void *p, char *s)
 {
     if (p)
         free(p);
-    printf("%s\n", s);
+    ft_printf("%s\n", s);
     return 0;
 }
 
@@ -187,12 +203,8 @@ typedef struct      s_decryptor_values
 uint64_t elf64_encrypt(void *data, size_t size)  /* return 64 bit key */
 {
     uint64_t    key, key_copy;
-    struct      timespec tp;
 
-    (void)clock_gettime(CLOCK_REALTIME, &tp);
-    srand(tp.tv_sec ^ tp.tv_nsec);  /* try to figure out the key from file creation time */
-    key = rand();
-    key = (key << 32) | rand();
+    key = get_random_key();
     key_copy = key;
     for (size_t i = 0; i < size; i++) {
         *(unsigned char *)(data + i) ^= key & 0xff;
@@ -219,6 +231,8 @@ void elf64_insert(void *data, Elf64_Phdr *phdr, ssize_t fsize)
     dv.address = text->sh_addr;
 
     dv.key = elf64_encrypt(data + text->sh_offset, text->sh_size);
+    
+    ft_printf("encryption key = 0x%lx\n", dv.key);
 
     ptr = data + phdr->p_offset + phdr->p_filesz;   //before modifying p_filesz
 
@@ -226,8 +240,8 @@ void elf64_insert(void *data, Elf64_Phdr *phdr, ssize_t fsize)
     phdr->p_filesz += decryptor_len;
     phdr->p_flags |= PF_X | PF_W | PF_R;
     k = decryptor_len - sizeof(t_dv);
-    memcpy(ptr, decryptor, k);
-    memcpy(ptr + k, &dv, sizeof(t_dv));
+    ft_memcpy(ptr, decryptor, k);
+    ft_memcpy(ptr + k, &dv, sizeof(t_dv));
 }
 
 int main(int ac, char **av)
@@ -249,7 +263,7 @@ int main(int ac, char **av)
         return free_msg_quit(data, "could not find suitable cavity");
     elf64_insert(data, phdr, fsize);
     if (!file_put_contents("woody", data, fsize, 0755))
-        printf("could not write output file");
+        ft_printf("could not write output file");
     free(data);
     return 0;
 }
