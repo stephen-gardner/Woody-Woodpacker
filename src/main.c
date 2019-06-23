@@ -126,16 +126,33 @@ Elf64_Shdr	*get_text_section(void *data)
     return NULL ;
 }
 
-int is_valid_elf64(void *data)
+int is_valid_header(void *data)
 {
-    Elf64_Ehdr  *ehdr = data;
-
-    const unsigned char elf64_valid_header[] = {
+    const unsigned char elf64_sysv[] = {
       0x7f, 0x45, 0x4c, 0x46, 0x02, 0x01, 0x01, 0x00,
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     };
 
-    if (memcmp(data, elf64_valid_header, sizeof(elf64_valid_header)))
+    const unsigned char elf64_gnu[] = {
+      0x7f, 0x45, 0x4c, 0x46, 0x02, 0x01, 0x01, 0x03,
+      0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+    };
+    
+    int result = 0;
+
+    if (!memcmp(data, elf64_sysv, sizeof(elf64_sysv)))
+        result = 1;
+    if (!memcmp(data, elf64_gnu, sizeof(elf64_gnu)))
+        result = 1;
+
+    return result;
+}
+
+int is_valid_elf64(void *data)
+{
+    Elf64_Ehdr  *ehdr = data;
+
+    if (!is_valid_header(data))
         return 0;
     if (ehdr->e_phentsize != sizeof(Elf64_Phdr)) /* XXX wtf */
         return 0;

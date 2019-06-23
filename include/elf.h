@@ -90,6 +90,12 @@ typedef struct
 
 /* Legal values for e_type (object file type).  */
 
+#define EI_OSABI	7		/* OS ABI identification */
+#define ELFOSABI_NONE		0	/* UNIX System V ABI */
+#define ELFOSABI_SYSV		0	/* Alias.  */
+#define ELFOSABI_GNU		3	/* Object uses GNU ELF extensions.  */
+#define ELFOSABI_LINUX		ELFOSABI_GNU /* Compatibility alias.  */
+
 #define ET_EXEC		2		/* Executable file */
 #define ET_DYN		3		/* Shared object file */
 #define EM_X86_64	62	/* AMD x86-64 architecture */
