@@ -14,20 +14,22 @@ $(OBJ): $(SRC)
 $(LIBFT):
 	make -C libft
 
-src/decryptor.c:
-	cd src; nasm -f bin decryptor.s -o decryptor
-	cd src; xxd -i -c 8 decryptor decryptor.c
+src/g_decryptor.c:
+	cd src; nasm -f bin decryptor.s -o g_decryptor
+	cd src; xxd -i -c 8 g_decryptor g_decryptor.c
 
-src/decryptor.o: src/decryptor.c
+src/g_decryptor.o: src/g_decryptor.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(NAME): $(OBJ) src/decryptor.o $(LIBFT) 
+$(NAME): $(OBJ) src/g_decryptor.o $(LIBFT) 
 	$(CC) $^ $(LDFLAGS) -o $@
 
 clean:
-	rm -f $(OBJ) src/decryptor src/decryptor.c src/decryptor.o
+	rm -f $(OBJ) src/g_decryptor src/g_decryptor.c src/g_decryptor.o
+	make -C libft clean
 
 fclean:	clean
 	rm -f $(NAME)
+	make -C libft fclean
 
 re: fclean all
