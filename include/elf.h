@@ -84,4 +84,15 @@ typedef struct
 #define PT_LOPROC   0x70000000              /* Start of processor-specific */
 #define PT_HIPROC   0x7fffffff              /* End of processor-specific */
 
+#define SHT_PROGBITS	  1		/* Program data */
+#define SHF_EXECINSTR	     (1 << 2)	/* Executable */
+
+
+/* Legal values for e_type (object file type).  */
+
+#define ET_EXEC		2		/* Executable file */
+#define ET_DYN		3		/* Shared object file */
+#define EM_X86_64	62	/* AMD x86-64 architecture */
+#define EV_CURRENT	1		/* Current version */
+
 #endif
