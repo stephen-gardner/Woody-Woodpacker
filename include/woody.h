@@ -6,14 +6,14 @@
 /*   By: sgardner <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/22 22:48:07 by sgardner          #+#    #+#             */
-/*   Updated: 2019/06/23 18:40:04 by sgardner         ###   ########.fr       */
+/*   Updated: 2019/06/23 18:48:21 by sgardner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef WOODY_H
 # define WOODY_H
-# include "elf.h"
 # include "libft.h"
+# include <elf.h>
 
 typedef struct	s_decryptor_values
 {
