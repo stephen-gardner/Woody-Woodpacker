@@ -4,8 +4,8 @@
 woody
 woody_woodpacker
 libft.a
-src/g_decryptor
-src/g_decryptor.c
+obj/g_decryptor
+obj/g_decryptor.c
 
 *.sw*
 

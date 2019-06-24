@@ -3,105 +3,129 @@
 /*                                                        :::      ::::::::   */
 /*   libft.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
+/*   By: sgardner <stephenbgardner@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/09/20 17:51:15 by asarandi          #+#    #+#             */
-/*   Updated: 2018/05/19 18:21:18 by asarandi         ###   ########.fr       */
+/*   Created: 2016/12/16 01:23:55 by sgardner          #+#    #+#             */
+/*   Updated: 2018/10/21 04:18:21 by sgardner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LIBFT_H
 # define LIBFT_H
+# include <stddef.h>
 
-# include <stdlib.h>
-# include <unistd.h>
-# include <string.h>
-# define BUFF_SIZE 1
+# define UNUSED(x)		(void)(x)
+# define LEN(x)			ft_strlen(x)
+# define NLEN(x, y)		ft_strnlen(x, y)
+# define MAX(x, y)		((x > y) ? x : y)
+# define MIN(x, y)		((x < y) ? x : y)
 
-typedef struct		s_list
-{
-	void			*content;
-	size_t			content_size;
-	struct s_list	*next;
-}					t_list;
+# ifndef FALSE
+#  define FALSE 		0
+# endif
+# ifndef TRUE
+#  define TRUE			!FALSE
+# endif
 
-typedef	struct		s_gnl
-{
-	void			*mem;
-	size_t			size;
-	int				fd;
-	int				eof;
-	struct s_gnl	*prev;
-	struct s_gnl	*next;
-}					t_gnl;
+typedef int				t_bool;
+typedef unsigned char	t_byte;
+typedef unsigned int	t_uint;
 
-int					ft_strnicmp(const char *s1, const char *s2, size_t n);
-int					ft_stricmp(const char *s1, const char *s2);
-int					get_next_line(const int fd, char **line);
-t_list				*ft_lstnew(void const *content, size_t content_size);
-void				ft_lstdelone(t_list **alst, void (*del)(void *, size_t));
-void				ft_lstdel(t_list **alst, void (*del)(void *, size_t));
-void				ft_lstadd(t_list **alst, t_list *new);
-void				ft_lstiter(t_list *lst, void (*f)(t_list *elem));
-t_list				*ft_lstmap(t_list *lst, t_list *(*f)(t_list *elem));
-void				ft_putnbr_fd(int n, int fd);
-void				ft_putendl_fd(char const *s, int fd);
-void				ft_putstr_fd(char const *s, int fd);
-void				ft_putchar_fd(char c, int fd);
-void				ft_putnbr(int n);
-void				ft_putendl(char const *s);
-void				ft_putstr(char const *s);
-void				ft_putchar(char c);
-char				*ft_itoa(int n2);
-char				**ft_strsplit(char const *s, char c);
-char				*ft_strtrim(char const *s);
-char				*ft_strjoin(char const *s1, char const *s2);
-char				*ft_strsub(char const *s, unsigned int start, size_t len);
-int					ft_strnequ(char const *s1, char const *s2, size_t n);
-int					ft_strequ(char const *s1, char const *s2);
-char				*ft_strmapi(char const *s, char (*f)(unsigned int, char));
-char				*ft_strmap(char const *s, char (*f)(char));
-void				ft_striteri(char *s, void (*f)(unsigned int, char *));
-void				ft_striter(char *s, void (*f)(char *));
-void				ft_strclr(char *s);
-void				ft_strdel(char **as);
-char				*ft_strnew(size_t size);
-void				ft_memdel(void **ap);
-void				*ft_memalloc(size_t size);
-size_t				ft_strlcat(char *dst, const char *src, size_t size);
-int					ft_memcmp(const void *s1, const void *s2, size_t n);
-void				*ft_memchr(const void *s, int c, size_t n);
-void				*ft_memmove(void *dst, const void *src, size_t len);
-char				*ft_strncat(char *dest, const char *src, size_t n);
-char				*ft_strrchr(const char *s, int c);
-char				*ft_strchr(const char *s, int c);
-char				*ft_strcat(char *s1, const char *s2);
-void				ft_bzero(void *s, size_t n);
-void				*ft_memccpy(void *dest, const void *src, int c, size_t n);
-void				*ft_memcpy(void *dest, const void *src, size_t n);
-void				*ft_memset(void *s, int c, size_t n);
-int					ft_isalnum(int c);
-int					ft_isalpha(int c);
-int					ft_isascii(int c);
-int					ft_isdigit(int c);
-int					ft_isprint(int c);
-int					ft_strcmp(const char *s1, const char *s2);
-char				*ft_strcpy(char *dst, const char *src);
-char				*ft_strdup(const char *s1);
-size_t				ft_strlen(const char *s);
-int					ft_strncmp(const char *s1, const char *s2, size_t n);
-char				*ft_strncpy(char *dst, const char *src, size_t len);
-char				*ft_strnstr(const char *big, const char *litl, size_t len);
-char				*ft_strstr(const char *big, const char *little);
-int					ft_tolower(int c);
-int					ft_toupper(int c);
-int					ft_atoi(const char *s);
-char				*ft_strreplace(char *search, char *replace, char *subject);
-char				*ft_capitalize(char *str);
-int					ft_isspace(int c);
-char				*ft_uriencode(char *s);
-char				*ft_base64encode(unsigned char *o, size_t size);
-char				*ft_strtolower(char *s);
-char				*ft_strtoupper(char *s);
+/*
+** Reproduction of <ctype.h>
+*/
 
+# define IS_ASCII(c)	(!(c >> 7))
+# define IS_BLANK(c)	(c == ' ' || c == '\t')
+# define IS_DIGIT(c)	((t_uint)(c - '0') < 10)
+# define IS_GRAPH(c)	((t_uint)(c - '!') < 94)
+# define IS_LOWER(c)	((t_uint)(c - 'a') < 26)
+# define IS_PRINT(c)	((t_uint)(c - ' ') < 95)
+# define IS_CNTRL(c)	(!IS_PRINT(c))
+# define IS_UPPER(c)	((t_uint)(c - 'A') < 26)
+# define IS_ALPHA(c)	(IS_LOWER(c) || IS_UPPER(c))
+# define IS_ALNUM(c)	(IS_ALPHA(c) || IS_DIGIT(c))
+# define IS_PUNCT(c)	(IS_PRINT(c) && !FT_ISALNUM(c) && c != ' ')
+# define IS_SPACE(c)	(c == ' ' || (t_uint)(c - '\t') < 5)
+# define IS_XDIGIT(c)	(ISDIGIT(c) || (t_uint)(c - 'A') < 6)
+# define TO_ASCII(c)	(c & 0x7F)
+# define TO_LOWER(c)	(IS_UPPER(c) ? c + ' ' : c)
+# define TO_UPPER(c)	(IS_LOWER(c) ? c - ' ' : c)
+
+/*
+** Reproduction of <stdlib.h>
+*/
+
+# define ABS(x)			((x < 0) ? -x : x)
+
+int		ft_atoi(const char *str);
+
+/*
+** Standard I/O: libft exclusive
+*/
+
+char	*ft_itoa(int n);
+void	ft_putendl(const char *s);
+void	ft_putendl_fd(const char *s, int fd);
+void	ft_putchar(char c);
+void	ft_putchar_fd(char c, int fd);
+void	ft_putnbr(int n);
+void	ft_putnbr_fd(int n, int fd);
+void	ft_putstr(const char *s);
+void	ft_putstr_fd(const char *s, int fd);
+
+/*
+** Reproduction of <string.h>
+*/
+
+void	*ft_memccpy(void *s1, const void *s2, int c, size_t n);
+void	*ft_memchr(const void *s, int c, size_t n);
+int		ft_memcmp(const void *s1, const void *s2, size_t n);
+void	*ft_memcpy(void *s1, const void *s2, size_t n);
+void	*ft_memmove(void *s1, const void *s2, size_t n);
+void	*ft_memset(void *s, int c, size_t n);
+char	*ft_stpcpy(char *s1, const char *s2);
+char	*ft_stpncpy(char *s1, const char *s2, size_t n);
+char	*ft_strcat(char *s1, const char *s2);
+char	*ft_strchr(const char *s, int c);
+int		ft_strcmp(const char *s1, const char *s2);
+char	*ft_strcpy(char *s1, const char *s2);
+char	*ft_strdup(const char *s);
+size_t	ft_strlen(const char *s);
+char	*ft_strncat(char *s1, const char *s2, size_t n);
+int		ft_strncmp(const char *s1, const char *s2, size_t n);
+char	*ft_strncpy(char *s1, const char *s2, size_t n);
+char	*ft_strndup(const char *s, size_t size);
+size_t	ft_strnlen(const char *s, size_t maxlen);
+char	*ft_strrchr(const char *s, int c);
+char	*ft_strstr(const char *s1, const char *s2);
+
+/*
+** BSD <string.h>
+*/
+
+size_t	ft_strlcat(char *s1, const char *s2, size_t n);
+size_t	ft_strlcpy(char *s1, const char *s2, size_t n);
+char	*ft_strnstr(const char *s1, const char *s2, size_t n);
+
+/*
+** Strings and memory: libft exclusive
+*/
+
+void	*ft_memalloc(size_t size);
+void	ft_memdel(void **ap);
+void	*ft_revbytes(void *ptr, size_t n);
+char	*ft_strcapitalize(char *str);
+void	ft_strclr(char *s);
+void	ft_strdel(char **as);
+int		ft_strequ(const char *s1, const char *s2);
+char	*ft_strjoin(const char *s1, const char *s2);
+char	*ft_strlowcase(char *str);
+int		ft_strnequ(const char *s1, const char *s2, size_t n);
+char	*ft_strnew(size_t size);
+char	*ft_strrev(char *str);
+char	**ft_strsplit(const char *s, char delim);
+char	*ft_strsub(const char *s, unsigned int start, size_t len);
+char	*ft_strtrim(const char *s);
+char	*ft_strupcase(char *str);
 #endif

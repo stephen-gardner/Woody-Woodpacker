@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asarandi <asarandi@student.42.us.org>      +#+  +:+       +#+        */
+/*   By: sgardner <stephenbgardner@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2017/09/22 11:12:33 by asarandi          #+#    #+#             */
-/*   Updated: 2017/09/22 11:17:04 by asarandi         ###   ########.fr       */
+/*   Created: 2016/12/16 01:14:55 by sgardner          #+#    #+#             */
+/*   Updated: 2018/03/19 16:40:15 by sgardner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,22 +14,18 @@
 
 int	ft_memcmp(const void *s1, const void *s2, size_t n)
 {
-	const unsigned char	*u1;
-	const unsigned char	*u2;
-	size_t				i;
+	const t_byte	*b1;
+	const t_byte	*b2;
+	size_t			i;
 
-	u1 = s1;
-	u2 = s2;
+	b1 = (const t_byte *)s1;
+	b2 = (const t_byte *)s2;
 	i = 0;
-	if ((!u1[i]) && (!u2[i]))
-		return (0);
 	while (i < n)
 	{
-		if (u1[i] != u2[i])
-			break ;
-		i++;
+		if (b1[i] != b2[i])
+			return (b1[i] - b2[i]);
+		++i;
 	}
-	if (i == n)
-		return (0);
-	return (u1[i] - u2[i]);
+	return (0);
 }

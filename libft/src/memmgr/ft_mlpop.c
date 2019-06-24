@@ -1,30 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memcpy.c                                        :+:      :+:    :+:   */
+/*   ft_mlpop.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sgardner <stephenbgardner@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/12/16 01:15:03 by sgardner          #+#    #+#             */
-/*   Updated: 2018/03/19 16:40:26 by sgardner         ###   ########.fr       */
+/*   Created: 2017/12/02 17:25:01 by sgardner          #+#    #+#             */
+/*   Updated: 2018/07/10 02:07:46 by sgardner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include <stdlib.h>
+#include "ft_memmgr.h"
 
-void	*ft_memcpy(void *s1, const void *s2, size_t n)
+t_mlink	*ft_mlpop(t_mchain *mchain)
 {
-	const t_byte	*src;
-	t_byte			*dst;
-	size_t			i;
+	t_mlink		*next;
 
-	src = (const t_byte *)s2;
-	dst = (t_byte *)s1;
-	i = 0;
-	while (i < n)
-	{
-		dst[i] = src[i];
-		++i;
-	}
-	return (s1);
+	if (!mchain->start)
+		return (NULL);
+	if (mchain->end == mchain->start)
+		mchain->end = NULL;
+	next = mchain->start->next;
+	if (CANFREE(mchain->start))
+		free(mchain->start->ptr);
+	free(mchain->start);
+	mchain->link_count--;
+	return ((mchain->start = next));
 }

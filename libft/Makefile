@@ -1,112 +1,101 @@
-NAME		= libft.a
-CFLAGS		+= -O1 -Wall -Werror -Wextra
-CFLAGS		+= -I inc/
-FILES = ft_atoi.c \
-        ft_base64encode.c \
-        ft_bzero.c \
-        ft_capitalize.c \
-        ft_isalnum.c \
-        ft_isalpha.c \
-        ft_isascii.c \
-        ft_isdigit.c \
-        ft_isprint.c \
-        ft_isspace.c \
-        ft_itoa.c \
-        ft_lstadd.c \
-        ft_lstdel.c \
-        ft_lstdelone.c \
-        ft_lstiter.c \
-        ft_lstmap.c \
-        ft_lstnew.c \
-        ft_memalloc.c \
-        ft_memccpy.c \
-        ft_memchr.c \
-        ft_memcmp.c \
-        ft_memcpy.c \
-        ft_memdel.c \
-        ft_memmove.c \
-        ft_memset.c \
-        ft_printf.c \
-        ft_printf_add_precision.c \
-        ft_printf_add_width.c \
-        ft_printf_colors.c \
-        ft_printf_float_cosmetics.c \
-        ft_printf_format_csws.c \
-        ft_printf_format_ioux.c \
-        ft_printf_get_char.c \
-        ft_printf_get_double.c \
-        ft_printf_get_specs.c \
-        ft_printf_init_lib.c \
-        ft_printf_is_format.c \
-        ft_printf_iso8601.c \
-        ft_printf_non_numeric.c \
-        ft_printf_print_number.c \
-        ft_printf_string_op.c \
-        ft_printf_wchar_to_utf8.c \
-        ft_putchar.c \
-        ft_putchar_fd.c \
-        ft_putendl.c \
-        ft_putendl_fd.c \
-        ft_putnbr.c \
-        ft_putnbr_fd.c \
-        ft_putstr.c \
-        ft_putstr_fd.c \
-        ft_strcat.c \
-        ft_strchr.c \
-        ft_strclr.c \
-        ft_strcmp.c \
-        ft_strcpy.c \
-        ft_strdel.c \
-        ft_strdup.c \
-        ft_strequ.c \
-        ft_stricmp.c \
-        ft_striter.c \
-        ft_striteri.c \
-        ft_strjoin.c \
-        ft_strlcat.c \
-        ft_strlen.c \
-        ft_strmap.c \
-        ft_strmapi.c \
-        ft_strncat.c \
-        ft_strncmp.c \
-        ft_strncpy.c \
-        ft_strnequ.c \
-        ft_strnew.c \
-        ft_strnicmp.c \
-        ft_strnstr.c \
-        ft_strrchr.c \
-        ft_strreplace.c \
-        ft_strsplit.c \
-        ft_strstr.c \
-        ft_strsub.c \
-        ft_strtolower.c \
-        ft_strtoupper.c \
-        ft_strtrim.c \
-        ft_tolower.c \
-        ft_toupper.c \
-        ft_uriencode.c \
-        get_next_line.c
+#!/usr/bin/make -f
 
-SRC_DIR		= src/
-OBJ_DIR		= obj/
-OBJ_FILES	= $(addprefix $(OBJ_DIR), $(FILES:.c=.o))
+################################################################################
+# SETTINGS                                                                     #
+################################################################################
 
+NAME = libft.a
+AR = ar
+ARFLAGS = -rcs
+AS = nasm
+ASFLAGS += -f macho64
+CC = gcc
+CFLAGS += -Wall -Werror -Wextra
+CFLAGS += #-Ofast
+CFLAGS += #-g -fsanitize=address
+INC = -I inc
+SRC_DIR = src
+OBJ_DIR = obj
+
+# [ BASE ]
+
+SRC = \
+	ft_memalloc\
+	ft_memcmp\
+	ft_memcpy\
+	ft_memset\
+	ft_stpncpy\
+	ft_strchr\
+	ft_strcmp\
+	ft_strdup\
+	ft_strlen\
+	ft_strnlen\
+	ft_strupcase
+
+# [ PRINTF ]
+
+SRC += \
+	printf/conv_char\
+	printf/conv_float\
+	printf/conv_int\
+	printf/conv_int_deprecated\
+	printf/conv_misc\
+	printf/conv_wchar\
+	printf/ft_printf\
+	printf/ft_vprintf\
+	printf/parser\
+	printf/process\
+	printf/util\
+	printf/util_int
+
+# [ MEMORY MANAGER ]
+
+SRC += \
+	memmgr/ft_mchain\
+	memmgr/ft_mladd\
+	memmgr/ft_mlalloc\
+	memmgr/ft_mlpop\
+	memmgr/ft_mlrev
+
+# [ OTHER ]
+
+SRC += \
+	getopt/ft_getopt
+
+OBJ = $(patsubst %, $(OBJ_DIR)/%.o, $(SRC))
+
+################################################################################
+# COLORS                                                                       #
+################################################################################
+
+NC = \033[0m
+GREEN = \033[1;32m
+RED = \033[1;31m
+YELLOW = \033[1;33m
+
+################################################################################
+# RULES                                                                        #
+################################################################################
 
 all: $(NAME)
 
-$(NAME): $(OBJ_FILES)
-	ar rcs $@ $^
+$(NAME): $(OBJ)
+	@$(AR) $(ARFLAGS) $@ $(OBJ)
+	@echo "$(GREEN)DONE$(NC)"
 
-$(OBJ_FILES): $(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_DIR)
-	$(CC) $(CFLAGS) -c -o $@ $<
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
+	@$(CC) $(CFLAGS) $(INC) -c $< -o $@
 
-$(OBJ_DIR):
-	mkdir -p $@
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.s
+	@mkdir -p $(dir $@)
+	@$(AS) $(ASFLAGS) $< -o $@
 
 clean:
-	rm -rf $(OBJ_DIR)
+	@rm -rf $(OBJ_DIR)
 
 fclean: clean
-	rm -rf $(NAME)
+	@rm -f $(NAME)
+	@echo "$(RED)$(NAME) removed$(NC)"
 
 re: fclean all

@@ -1,30 +1,31 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memcpy.c                                        :+:      :+:    :+:   */
+/*   ft_mladd.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sgardner <stephenbgardner@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/12/16 01:15:03 by sgardner          #+#    #+#             */
-/*   Updated: 2018/03/19 16:40:26 by sgardner         ###   ########.fr       */
+/*   Created: 2017/12/03 00:04:08 by sgardner          #+#    #+#             */
+/*   Updated: 2017/12/06 00:28:58 by sgardner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include <stdlib.h>
+#include "ft_memmgr.h"
 
-void	*ft_memcpy(void *s1, const void *s2, size_t n)
+t_mlink	*ft_mladd(t_mchain *mchain, void *ptr, size_t size)
 {
-	const t_byte	*src;
-	t_byte			*dst;
-	size_t			i;
+	t_mlink		*mlink;
 
-	src = (const t_byte *)s2;
-	dst = (t_byte *)s1;
-	i = 0;
-	while (i < n)
-	{
-		dst[i] = src[i];
-		++i;
-	}
-	return (s1);
+	if (!(mlink = (t_mlink *)ft_memalloc(sizeof(t_mlink))))
+		return (NULL);
+	mlink->mchain = mchain;
+	mlink->ptr = ptr;
+	mlink->size = size;
+	mlink->next = mchain->start;
+	mchain->start = mlink;
+	if (!mchain->end)
+		mchain->end = mlink;
+	mchain->link_count++;
+	return (mlink);
 }

@@ -6,12 +6,13 @@
 /*   By: asarandi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/23 18:24:03 by asarandi          #+#    #+#             */
-/*   Updated: 2019/06/23 18:28:19 by sgardner         ###   ########.fr       */
+/*   Updated: 2019/06/23 20:38:43 by sgardner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "woody.h"
 #include <fcntl.h>
+#include <stdlib.h>
 
 static int		is_valid_header(void *data)
 {

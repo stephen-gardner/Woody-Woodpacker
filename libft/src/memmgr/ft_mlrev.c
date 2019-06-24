@@ -1,28 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strdup.c                                        :+:      :+:    :+:   */
+/*   ft_mlrev.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sgardner <stephenbgardner@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/12/16 01:17:59 by sgardner          #+#    #+#             */
-/*   Updated: 2018/03/08 00:26:20 by sgardner         ###   ########.fr       */
+/*   Created: 2017/12/03 15:42:33 by sgardner          #+#    #+#             */
+/*   Updated: 2017/12/06 00:31:04 by sgardner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdlib.h>
-#include "libft.h"
+#include "ft_memmgr.h"
 
-char	*ft_strdup(const char *s)
+t_mlink	*ft_mlrev(t_mchain *mchain)
 {
-	char	*dup;
-	size_t	len;
+	t_mlink		*current;
+	t_mlink		*prev;
+	t_mlink		*next;
 
-	len = ft_strlen(s);
-	if ((dup = (char *)malloc(len + 1)))
+	if (!(current = mchain->start))
+		return (NULL);
+	if (mchain->end == current)
+		return (current);
+	mchain->end = current;
+	prev = NULL;
+	while (TRUE)
 	{
-		ft_memcpy(dup, s, len);
-		dup[len] = '\0';
+		next = current->next;
+		current->next = prev;
+		prev = current;
+		if (!next)
+			break ;
+		current = next;
 	}
-	return (dup);
+	return ((mchain->start = current));
 }

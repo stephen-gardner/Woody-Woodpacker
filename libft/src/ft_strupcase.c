@@ -1,30 +1,23 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_memcpy.c                                        :+:      :+:    :+:   */
+/*   ft_strupcase.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sgardner <stephenbgardner@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2016/12/16 01:15:03 by sgardner          #+#    #+#             */
-/*   Updated: 2018/03/19 16:40:26 by sgardner         ###   ########.fr       */
+/*   Created: 2016/12/19 10:59:50 by sgardner          #+#    #+#             */
+/*   Updated: 2018/03/19 17:08:27 by sgardner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	*ft_memcpy(void *s1, const void *s2, size_t n)
+char	*ft_strupcase(char *str)
 {
-	const t_byte	*src;
-	t_byte			*dst;
-	size_t			i;
+	size_t	i;
 
-	src = (const t_byte *)s2;
-	dst = (t_byte *)s1;
 	i = 0;
-	while (i < n)
-	{
-		dst[i] = src[i];
+	while ((str[i] = (char)TO_UPPER(str[i])))
 		++i;
-	}
-	return (s1);
+	return (str);
 }
