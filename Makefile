@@ -2,13 +2,17 @@ NAME    := woody_woodpacker
 CFLAGS  += -g -Wall -Werror -Wextra
 CFLAGS	+= -Iinclude -Ilibft/inc
 LDFLAGS	+= -Llibft -lft
-SRC     := src/main.c
-OBJ		:= $(SRC:.c=.o)
+SRC     := \
+	        load \
+			main \
+			encrypt \
+			segment
+OBJ		:= $(patsubst %, src/%.o, $(SRC))
 LIBFT   := libft/libft.a
 
 all: $(NAME)
 
-$(OBJ): $(SRC)
+src/%.o: src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(LIBFT):
@@ -22,14 +26,14 @@ src/g_decryptor.o: src/g_decryptor.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 $(NAME): $(OBJ) src/g_decryptor.o $(LIBFT) 
-	$(CC) $^ $(LDFLAGS) -o $@
+	$(CC) $(CFLAGS) $^ $(LDFLAGS) -o $@
 
 clean:
 	rm -f $(OBJ) src/g_decryptor src/g_decryptor.c src/g_decryptor.o
-	make -C libft clean
+	#make -C libft clean
 
 fclean:	clean
 	rm -f $(NAME)
-	make -C libft fclean
+	#make -C libft fclean
 
 re: fclean all
