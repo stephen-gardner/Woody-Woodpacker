@@ -6,7 +6,7 @@
 /*   By: asarandi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/23 00:56:32 by asarandi          #+#    #+#             */
-/*   Updated: 2019/06/24 20:15:39 by sgardner         ###   ########.fr       */
+/*   Updated: 2019/06/24 22:00:45 by sgardner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,16 +27,18 @@ static uint64_t	get_random_key(void)
 	return (data);
 }
 
-static uint64_t	encrypt_code(void *data, size_t size)
+static uint64_t	encrypt_code(t_woody *woody)
 {
+	void		*data;
 	uint64_t	key;
 	uint64_t	key_copy;
 	size_t		i;
 
-	key = get_random_key();
+	data = woody->data + woody->text->sh_offset;
+	key = (woody->key) ? *woody->key : get_random_key();
 	key_copy = key;
 	i = -1;
-	while (++i < size)
+	while (++i < woody->text->sh_size)
 	{
 		*(unsigned char *)(data + i) ^= key & 0xff;
 		key = (key >> 1) | ((key & 0x01) << 63);
@@ -69,9 +71,8 @@ void			create_encrypted_binary(t_woody *woody)
 	dv.pos = ehdr->e_type == ET_DYN ? ehdr->e_entry : 0;
 	dv.size = woody->text->sh_size;
 	dv.address = woody->text->sh_addr;
-	dv.key = encrypt_code(woody->data + woody->text->sh_offset,
-				woody->text->sh_size);
-	ft_printf("encryption key = 0x%lx\n", dv.key);
+	dv.key = encrypt_code(woody);
+	ft_printf("encryption key = %#.16llx\n", dv.key);
 	ptr = woody->data + woody->code->p_offset + woody->code->p_filesz;
 	woody->code->p_memsz += g_decryptor_len;
 	woody->code->p_filesz += g_decryptor_len;

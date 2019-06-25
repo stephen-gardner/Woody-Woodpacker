@@ -6,7 +6,7 @@
 /*   By: sgardner <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/22 22:48:07 by sgardner          #+#    #+#             */
-/*   Updated: 2019/06/23 20:33:43 by sgardner         ###   ########.fr       */
+/*   Updated: 2019/06/24 21:54:56 by sgardner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ typedef struct	s_decryptor_values
 
 typedef struct	s_woody
 {
+	uint64_t	*key;
 	void		*data;
 	Elf64_Phdr	*code;
 	Elf64_Shdr	*text;
