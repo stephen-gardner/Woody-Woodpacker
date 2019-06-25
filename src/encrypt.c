@@ -6,7 +6,7 @@
 /*   By: asarandi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/23 00:56:32 by asarandi          #+#    #+#             */
-/*   Updated: 2019/06/23 20:30:45 by sgardner         ###   ########.fr       */
+/*   Updated: 2019/06/24 20:15:39 by sgardner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static uint64_t	encrypt_code(void *data, size_t size)
 	while (++i < size)
 	{
 		*(unsigned char *)(data + i) ^= key & 0xff;
-		key = (key >> 8) | ((key & 0xff) << 56);
+		key = (key >> 1) | ((key & 0x01) << 63);
 	}
 	return (key_copy);
 }

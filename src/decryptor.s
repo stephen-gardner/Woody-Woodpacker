@@ -33,7 +33,7 @@ loop:       cmp     rdi, rsi                    ;
             jge     done                        ;
             xor     byte [rdi], dl              ;
             inc     rdi                         ;
-            ror     rdx, 8                      ;
+            ror     rdx, 1                      ;
             jmp     loop                        ;
 
 done:       pop     rax                         ; restore registers
