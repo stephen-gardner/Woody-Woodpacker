@@ -6,7 +6,7 @@
 /*   By: sgardner <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/22 22:48:07 by sgardner          #+#    #+#             */
-/*   Updated: 2019/06/24 21:54:56 by sgardner         ###   ########.fr       */
+/*   Updated: 2019/06/25 00:11:32 by sgardner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,13 +32,22 @@ typedef struct	s_woody
 	Elf64_Phdr	*code;
 	Elf64_Shdr	*text;
 	ssize_t		filesize;
+	int			decrypt;
 }				t_woody;
+
+/*
+** decrypt.c
+*/
+
+int				is_encrypted(t_woody *woody);
+int				decrypt_binary(t_woody *woody);
 
 /*
 ** encrypt.c
 */
 
-void			create_encrypted_binary(t_woody *woody);
+int				create_encrypted_binary(t_woody *woody);
+uint64_t		encrypt_code(t_woody *woody);
 
 /*
 ** load.c
@@ -46,6 +55,12 @@ void			create_encrypted_binary(t_woody *woody);
 
 int				is_valid_elf64(t_woody *woody);
 int				load_file(t_woody *woody, char *f);
+
+/*
+** main.c
+*/
+
+int				fatal_error(void *p, char *s);
 
 /*
 ** segment.c

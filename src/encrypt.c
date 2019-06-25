@@ -6,7 +6,7 @@
 /*   By: asarandi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/23 00:56:32 by asarandi          #+#    #+#             */
-/*   Updated: 2019/06/24 22:00:45 by sgardner         ###   ########.fr       */
+/*   Updated: 2019/06/25 00:11:27 by sgardner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static uint64_t	get_random_key(void)
 	return (data);
 }
 
-static uint64_t	encrypt_code(t_woody *woody)
+uint64_t		encrypt_code(t_woody *woody)
 {
 	void		*data;
 	uint64_t	key;
@@ -46,25 +46,17 @@ static uint64_t	encrypt_code(t_woody *woody)
 	return (key_copy);
 }
 
-static int		write_output(t_woody *woody)
-{
-	int		fd;
-	ssize_t	bytes;
-
-	if ((fd = open("woody", O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
-		return (0);
-	bytes = write(fd, woody->data, woody->filesize);
-	close(fd);
-	return (bytes == woody->filesize);
-}
-
-void			create_encrypted_binary(t_woody *woody)
+int				create_encrypted_binary(t_woody *woody)
 {
 	Elf64_Ehdr	*ehdr;
 	t_dv		dv;
 	void		*ptr;
 	ssize_t		k;
 
+	if (is_encrypted(woody))
+		return (fatal_error(woody->data, "binary has already been packed"));
+	if (get_cavity_size(woody) < g_decryptor_len)
+		return (fatal_error(woody->data, "could not find space for decryptor"));
 	ehdr = woody->data;
 	dv.entry = ehdr->e_entry;
 	ehdr->e_entry = woody->code->p_vaddr + woody->code->p_memsz;
@@ -80,6 +72,5 @@ void			create_encrypted_binary(t_woody *woody)
 	k = g_decryptor_len - sizeof(t_dv);
 	ft_memcpy(ptr, g_decryptor, k);
 	ft_memcpy(ptr + k, &dv, sizeof(t_dv));
-	if (!write_output(woody))
-		ft_printf("could not write output file");
+	return (0);
 }

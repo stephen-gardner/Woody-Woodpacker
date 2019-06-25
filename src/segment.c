@@ -6,7 +6,7 @@
 /*   By: asarandi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/23 18:37:04 by asarandi          #+#    #+#             */
-/*   Updated: 2019/06/23 18:39:03 by sgardner         ###   ########.fr       */
+/*   Updated: 2019/06/24 23:47:35 by sgardner         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,6 @@ Elf64_Phdr	*get_code_segment(void *data)
 		if (phdr[i].p_vaddr == phdr[i].p_paddr
 			&& phdr[i].p_memsz == phdr[i].p_filesz
 			&& phdr[i].p_type == 1
-			&& phdr[i].p_flags == 5
 			&& ehdr->e_entry >= phdr[i].p_vaddr
 			&& ehdr->e_entry < phdr[i].p_vaddr + phdr[i].p_memsz)
 			return (&phdr[i]);

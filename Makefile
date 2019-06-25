@@ -4,9 +4,10 @@ CFLAGS	+= -Iinc -Ilibft/inc
 LDFLAGS	+= -Llibft -lft
 SRCDIR	= src
 SRC		= \
+			decrypt \
+			encrypt \
 			load \
 			main \
-			encrypt \
 			segment
 OBJDIR	= obj
 OBJ		= $(patsubst %, $(OBJDIR)/%.o, $(SRC))
