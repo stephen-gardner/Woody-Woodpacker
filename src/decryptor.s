@@ -18,9 +18,8 @@ _start:     pushf                               ; save registers
             test    rax, rax                    ;
             jz      decrypt                     ;
 
-            call    delta                       ; calc delta
-delta:      pop     rax                         ;
-            sub     rax, delta - _start         ;
+            lea     rax, [rel delta]            ;
+delta:      sub     rax, delta - _start         ;
             sub     rax, [rel pos]              ;
             add     [rel address], rax          ; fix addresses
             add     [rel entry], rax            ;
