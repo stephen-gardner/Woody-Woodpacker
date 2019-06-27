@@ -19,7 +19,7 @@ static uint64_t	get_random_key(void)
 	int			fd;
 	uint64_t	data;
 
-	if ((fd = open("/dev/urandom", O_RDONLY)) == -1)
+	if ((fd = open(F_PRNG, O_RDONLY)) == -1)
 		return (0xDEADBEEFBADC0FFE);
 	if (read(fd, &data, 8) != 8)
 		return (0xFEEDD0D0CACAC0DE);
@@ -54,17 +54,17 @@ int				create_encrypted_binary(t_woody *woody)
 	ssize_t		k;
 
 	if (is_encrypted(woody))
-		return (fatal_error(woody->data, "binary has already been packed"));
+		return (fatal_error(woody->data, E_ALREADY));
 	if (get_cavity_size(woody) < g_decryptor_len)
-		return (fatal_error(woody->data, "could not find space for decryptor"));
+		return (fatal_error(woody->data, E_NOSPACE));
 	ehdr = woody->data;
 	dv.entry = ehdr->e_entry;
 	ehdr->e_entry = woody->code->p_vaddr + woody->code->p_memsz;
-	dv.pos = ehdr->e_type == ET_DYN ? ehdr->e_entry : 0;
+	dv.pos = ehdr->e_entry;
 	dv.size = woody->text->sh_size;
 	dv.address = woody->text->sh_addr;
 	dv.key = encrypt_code(woody);
-	ft_printf("encryption key = %#.16llx\n", dv.key);
+	ft_printf(MSG_ENC, dv.key);
 	ptr = woody->data + woody->code->p_offset + woody->code->p_filesz;
 	woody->code->p_memsz += g_decryptor_len;
 	woody->code->p_filesz += g_decryptor_len;

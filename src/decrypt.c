@@ -32,7 +32,7 @@ int		decrypt_binary(t_woody *woody)
 	void		*ptr;
 
 	if (!is_encrypted(woody))
-		return (fatal_error(woody->data, "binary is not packed with woody"));
+		return (fatal_error(woody->data, E_FNOTENC));
 	ehdr = woody->data;
 	woody->code->p_memsz -= g_decryptor_len;
 	woody->code->p_filesz -= g_decryptor_len;
@@ -41,7 +41,7 @@ int		decrypt_binary(t_woody *woody)
 	dv = ptr + (g_decryptor_len - sizeof(t_dv));
 	ehdr->e_entry = dv->entry;
 	woody->key = &dv->key;
-	ft_printf("decryption key = %#.16llx\n", *woody->key);
+	ft_printf(MSG_DEC, *woody->key);
 	encrypt_code(woody);
 	ft_memset(ptr, 0, g_decryptor_len);
 	return (0);

@@ -23,8 +23,6 @@ int			fatal_error(void *p, char *s)
 	return (1);
 }
 
-#define BASE	"0123456789abcdef"
-
 static int	set_key(t_woody *woody, const char *arg)
 {
 	static uint64_t	key;
@@ -36,9 +34,9 @@ static int	set_key(t_woody *woody, const char *arg)
 	i = -1;
 	while (arg[++i])
 	{
-		if (i > 15 || !(found = ft_strchr(BASE, TO_LOWER(arg[i]))))
+		if (i > 15 || !(found = ft_strchr(BASE16, TO_LOWER(arg[i]))))
 			return (0);
-		key = (key * 16) + (found - BASE);
+		key = (key * 16) + (found - BASE16);
 	}
 	if (i == 16)
 	{
@@ -56,7 +54,7 @@ static int	parse_flags(t_woody *woody, int ac, char *const av[])
 	{
 		if (f == 'k' && !set_key(woody, g_optarg))
 		{
-			ft_dprintf(2, "Invalid key, must be 8-byte hex value\n");
+			ft_dprintf(2, E_BADKEY);
 			return (0);
 		}
 		else if (f == 'd')
@@ -73,7 +71,7 @@ static int	write_output(t_woody *woody, int decrypt)
 	int		fd;
 	ssize_t	bytes;
 
-	fname = (decrypt) ? "unwoody" : "woody";
+	fname = (decrypt) ? F_DEC : F_ENC;
 	if ((fd = open(fname, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
 		return (0);
 	bytes = write(fd, woody->data, woody->filesize);
@@ -87,13 +85,13 @@ int			main(int ac, char **av)
 
 	ft_memset(&woody, 0, sizeof(woody));
 	if (ac < 2)
-		return (fatal_error(0, "Usage: ./woody_woodpacker [-d -k key] binary"));
+		return (fatal_error(0, E_USAGE));
 	if (!parse_flags(&woody, ac, av))
 		return (1);
 	if (!load_file(&woody, av[g_optind]))
-		return (fatal_error(0, "failed to read input file"));
+		return (fatal_error(0, E_READ));
 	if (!is_valid_elf64(&woody))
-		return (fatal_error(woody.data, "invalid file"));
+		return (fatal_error(woody.data, E_INVALID));
 	if (woody.decrypt)
 	{
 		if (decrypt_binary(&woody))
@@ -102,7 +100,7 @@ int			main(int ac, char **av)
 	else if (create_encrypted_binary(&woody))
 		return (1);
 	if (!write_output(&woody, woody.decrypt))
-		return (fatal_error(woody.data, "could not write output file"));
+		return (fatal_error(woody.data, E_WRITE));
 	free(woody.data);
 	return (0);
 }

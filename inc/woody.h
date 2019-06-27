@@ -35,6 +35,21 @@ typedef struct	s_woody
 	int			decrypt;
 }				t_woody;
 
+#define E_FNOTENC	"binary is not encrypted with woody"
+#define E_NOSPACE	"could not find space for decryptor"
+#define E_ALREADY	"binary has already been encrypted"
+#define E_INVALID   "invalid file, must be linux elf64"
+#define E_READ		"failed to read input file"
+#define E_WRITE		"could not write output file"
+#define E_BADKEY	"invalid key, must be 16 characters long (0-9, a-f)"
+#define E_USAGE		"usage: ./woody_woodpacker [-d -k key] binary"
+#define MSG_ENC		"encryption key = %#.16llx\n"
+#define MSG_DEC		"decryption key = %#.16llx\n"
+#define F_DEC		"unwoody"
+#define F_ENC		"woody"
+#define F_PRNG		"/dev/urandom"
+#define BASE16	    "0123456789abcdef"
+
 /*
 ** decrypt.c
 */

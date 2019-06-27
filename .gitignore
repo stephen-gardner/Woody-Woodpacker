@@ -2,6 +2,7 @@
 *.d
 
 woody
+unwoody
 woody_woodpacker
 libft.a
 obj/g_decryptor
