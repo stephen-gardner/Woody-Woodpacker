@@ -6,12 +6,12 @@
 /*   By: sgardner <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/24 22:31:18 by sgardner          #+#    #+#             */
-/*   Updated: 2019/06/25 00:08:25 by sgardner         ###   ########.fr       */
+/*   Updated: 2019/06/28 00:45:45 by stephen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "woody.h"
-#include "ft_printf.h"
+#include <stdio.h>
 
 int		is_encrypted(t_woody *woody)
 {
@@ -41,7 +41,7 @@ int		decrypt_binary(t_woody *woody)
 	dv = ptr + (g_decryptor_len - sizeof(t_dv));
 	ehdr->e_entry = dv->entry;
 	woody->key = &dv->key;
-	ft_printf(MSG_DEC, *woody->key);
+	printf(MSG_DEC, *woody->key);
 	encrypt_code(woody);
 	ft_memset(ptr, 0, g_decryptor_len);
 	return (0);

@@ -6,20 +6,20 @@
 /*   By: asarandi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/23 00:56:32 by asarandi          #+#    #+#             */
-/*   Updated: 2019/06/25 00:11:27 by sgardner         ###   ########.fr       */
+/*   Updated: 2019/06/28 00:47:56 by stephen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "woody.h"
-#include "ft_printf.h"
 #include <fcntl.h>
+#include <stdio.h>
 
 static uint64_t	get_random_key(void)
 {
 	int			fd;
 	uint64_t	data;
 
-	if ((fd = open(F_PRNG, O_RDONLY)) == -1)
+	if ((fd = open("/dev/urandom", O_RDONLY)) == -1)
 		return (0xDEADBEEFBADC0FFE);
 	if (read(fd, &data, 8) != 8)
 		return (0xFEEDD0D0CACAC0DE);
@@ -64,7 +64,7 @@ int				create_encrypted_binary(t_woody *woody)
 	dv.size = woody->text->sh_size;
 	dv.address = woody->text->sh_addr;
 	dv.key = encrypt_code(woody);
-	ft_printf(MSG_ENC, dv.key);
+	printf(MSG_ENC, dv.key);
 	ptr = woody->data + woody->code->p_offset + woody->code->p_filesz;
 	woody->code->p_memsz += g_decryptor_len;
 	woody->code->p_filesz += g_decryptor_len;

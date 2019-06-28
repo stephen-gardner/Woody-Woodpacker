@@ -24,38 +24,8 @@ SRC = \
 	ft_memcmp\
 	ft_memcpy\
 	ft_memset\
-	ft_stpncpy\
 	ft_strchr\
-	ft_strcmp\
-	ft_strdup\
-	ft_strlen\
-	ft_strnlen\
-	ft_strupcase
-
-# [ PRINTF ]
-
-SRC += \
-	printf/conv_char\
-	printf/conv_float\
-	printf/conv_int\
-	printf/conv_int_deprecated\
-	printf/conv_misc\
-	printf/conv_wchar\
-	printf/ft_printf\
-	printf/ft_vprintf\
-	printf/parser\
-	printf/process\
-	printf/util\
-	printf/util_int
-
-# [ MEMORY MANAGER ]
-
-SRC += \
-	memmgr/ft_mchain\
-	memmgr/ft_mladd\
-	memmgr/ft_mlalloc\
-	memmgr/ft_mlpop\
-	memmgr/ft_mlrev
+	ft_strcmp
 
 # [ OTHER ]
 

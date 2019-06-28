@@ -6,22 +6,24 @@
 /*   By: asarandi <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/06/14 23:42:52 by asarandi          #+#    #+#             */
-/*   Updated: 2019/06/25 00:17:30 by sgardner         ###   ########.fr       */
+/*   Updated: 2019/06/28 00:45:06 by stephen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "woody.h"
 #include "ft_getopt.h"
-#include "ft_printf.h"
 #include <fcntl.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 int			fatal_error(void *p, char *s)
 {
 	free(p);
-	ft_dprintf(2, "%s\n", s);
+	dprintf(2, "%s\n", s);
 	return (1);
 }
+
+#define BASE16	"0123456789abcdef"
 
 static int	set_key(t_woody *woody, const char *arg)
 {
@@ -54,7 +56,7 @@ static int	parse_flags(t_woody *woody, int ac, char *const av[])
 	{
 		if (f == 'k' && !set_key(woody, g_optarg))
 		{
-			ft_dprintf(2, E_BADKEY);
+			dprintf(2, E_BADKEY);
 			return (0);
 		}
 		else if (f == 'd')
@@ -71,7 +73,7 @@ static int	write_output(t_woody *woody, int decrypt)
 	int		fd;
 	ssize_t	bytes;
 
-	fname = (decrypt) ? F_DEC : F_ENC;
+	fname = (decrypt) ? "unwoody" : "woody";
 	if ((fd = open(fname, O_WRONLY | O_CREAT | O_TRUNC, 0755)) == -1)
 		return (0);
 	bytes = write(fd, woody->data, woody->filesize);

@@ -6,14 +6,14 @@
 /*   By: sgardner <stephenbgardner@gmail.com>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/03 16:20:06 by sgardner          #+#    #+#             */
-/*   Updated: 2019/06/20 16:34:06 by stephen          ###   ########.fr       */
+/*   Updated: 2019/06/28 01:20:09 by stephen          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
 #include "ft_getopt.h"
-#include "ft_printf.h"
 #include "libft.h"
+#include <stdio.h>
+#include <unistd.h>
 
 char		*g_optarg = NULL;
 int			g_optind = 1;
@@ -30,7 +30,7 @@ static int		opt_error(const char *pname, const char *optstring,
 	};
 
 	if (g_opterr && *optstring != ':')
-		ft_dprintf(2, "%s: %s -- %c\n", pname, msg[no_arg], g_optopt);
+		dprintf(2, "%s: %s -- %c\n", pname, msg[no_arg], g_optopt);
 	return ((no_arg && *optstring == ':') ? ':' : '?');
 }
 
